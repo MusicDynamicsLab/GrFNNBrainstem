@@ -6,47 +6,78 @@
 %  they can simply be added here as well. 
 
 a  = [-412  0      0    0];
-b1 = [0     -40000   0    0];
-b2 = [0     -160e3 -100 -100];
-e  = [0     .04    .65  .65];
+b1 = [0     -40816 0    0];
+b2 = [0     0   -100 -100];
+d1 = [0     0      0    0];
+d2 = [0     0      0    0];
+e  = [0     0    .50  .50];
 
-display=20;
-osc=[50 750 200];
+c21 = 197960;
 
-%% Make short cochlea network
-nbm = networkMake(1, 'hopf', a(1), b1(1), b2(1), 0, 0, e(1),'log', osc(1), osc(2), osc(3), 'channel', 1, 'display', display, 'save', 1, 'zna', 0);
-nbm.w=1;
-nbm.a=real(nbm.a)./nbm.f+1i*imag(nbm.a);
-noc = networkMake(2, 'hopf', a(2), b1(2), b2(2), 0, 0, e(2), 'log', osc(1), osc(2), osc(3), 'display', display, 'save', 1, 'zna', 0);
+display = 20;
 
-noc.a=real(noc.a)./noc.f+1i*imag(noc.a);
-noc.b1=noc.b1./noc.f;noc.b2=noc.b2./noc.f;
+oscCochlea    = [30 10000 200];
+oscBrainstem = [50 750 200];
 
-%% Make CN and IC networks
-ncn = networkMake(3, 'hopf', a(3), b1(3), b2(3), 0, 0, e(3),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
-nic = networkMake(4, 'hopf', a(4), b1(4), b2(4), 0, 0, e(4),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
+%% Make a cochlea network =====================================================
+n1 = networkMake(1, 'hopf', a(1), b1(1), b2(1), d1(1), d2(1), e(1), ...
+                    'log', oscCochlea(1), oscCochlea(2), oscCochlea(3),...
+                    'display', display, 'save', 1, 'znaught', 0,...
+                    'noScale');
+                
+n2 = networkMake(2, 'hopf', a(2), b1(2), b2(2), d1(2), d2(2), e(2), ...
+                    'log', oscCochlea(1), oscCochlea(2), oscCochlea(3),...
+                    'display', display, 'save', 1, 'znaught', 0,...
+                    'noScale');
 
-%% Add BM->OC connections
-bm2oc = connectMake(nbm, noc, 'one', 1);
-noc   = connectAdd(nbm, noc, bm2oc, 'weight',198000,'type','1freq');
+%% Make a brainstem network ===================================================
+n3 = networkMake(3, 'hopf', a(3), b1(3), b2(3), d1(3), d2(3), e(3),...
+                    'log', oscBrainstem(1), oscBrainstem(2),...
+                     oscBrainstem(3), 'display', display, 'save', 1,...
+                     'znaught', 0);
+n4 = networkMake(4, 'hopf', a(4), b1(4), b2(4), d1(4), d2(4), e(4),...
+                    'log', oscBrainstem(1), oscBrainstem(2),...
+                     oscBrainstem(3), 'display', display, 'save', 1,...
+                     'znaught', 0);
+
+% %% Make short cochlea network
+% nbm = networkMake(1, 'hopf', a(1), b1(1), b2(1), 0, 0, e(1),'log', osc(1), osc(2), osc(3), 'channel', 1, 'display', display, 'save', 1, 'zna', 0);
+% nbm.w=1;
+% nbm.a=real(nbm.a)./nbm.f+1i*imag(nbm.a);
+% noc = networkMake(2, 'hopf', a(2), b1(2), b2(2), 0, 0, e(2), 'log', osc(1), osc(2), osc(3), 'display', display, 'save', 1, 'zna', 0);
+% 
+% noc.a=real(noc.a)./noc.f+1i*imag(noc.a);
+% noc.b1=noc.b1./noc.f;noc.b2=noc.b2./noc.f;
+% 
+% %% Make CN and IC networks
+% ncn = networkMake(3, 'hopf', a(3), b1(3), b2(3), 0, 0, e(3),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
+% nic = networkMake(4, 'hopf', a(4), b1(4), b2(4), 0, 0, e(4),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
+
+%% Make a stimulus ============================================================
+% Make a stimulus here, or just add it if already in workspace
+
+n1 = connectAdd(s, n1, 1, 'noScale');
+
+
+% %% Add BM->OC connections
+% bm2oc = connectMake(nbm, noc, 'one', 1);
+% noc   = connectAdd(nbm, noc, bm2oc, 'weight',198000,'type','1freq');
+
+%% Add connections from bm to oc
+bm2oc = diag(c21 * n2.f);
+
+n2    = connectAdd(n1, n2, bm2oc, 'type', '1freq', 'noScale');
 
 %% Add brainstem connections
-% oc2cn  = connectMake(noc, ncn, 'full',.005);
-% cn2ic  = connectMake(ncn, nic, 'full',.1);
-oc2cn  = connectMake(noc, ncn, 'full',.01);
-cn2ic  = connectMake(ncn, nic, 'full',.2);
+oc2cn  = connectMake(n2, n3, 'full', .03);
+cn2ic  = connectMake(n3, n4, 'full', .05);
 
-ncn   = connectAdd(noc, ncn, oc2cn, 'weight', 1);
-nic   = connectAdd(ncn, nic, cn2ic, 'weight', 1);
-
-% ncn   = connectAdd(noc, ncn, oc2cn, 'weight', 1, 'type', 'all2freq');
-% nic   = connectAdd(ncn, nic, cn2ic, 'weight', 1, 'type', 'all2freq');
+n3   = connectAdd(n2, n3, oc2cn);
+n4   = connectAdd(n3, n4, cn2ic);
 
 %% Run the network
-
-
-M = modelMake(@zdot, @cdot, s, nbm, noc, ncn, nic);
+M = modelMake(@zdot, @cdot, s, n1, n2, n3, n4);
 
 tic;
-M = odeRK4fs(M,s);
+M = odeRK4fs(M);
 clc; toc;

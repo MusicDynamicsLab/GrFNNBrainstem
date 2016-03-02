@@ -8,7 +8,8 @@ weightedFineTemp=absSpec((sum(weighted(:,1,:),3)/times - sum(weighted(:,2,:),3)/
 % [bbbb,aaaa]=butter(3,[10 450]/floor(fs/2));
 load filterCoeffsFFR
 
-filteredWeighted=filter(bbb,aaa,weighted);
+% filteredWeighted=filter(bbb,aaa,weighted);
+filteredWeighted=weighted;
 filteredWeighted=filter(bbbb,aaaa,filteredWeighted);
 
 modelEnv =sum(filteredWeighted(:,1,:),3)/times + sum(filteredWeighted(:,2,:),3)/times;
