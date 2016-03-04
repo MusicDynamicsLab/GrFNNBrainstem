@@ -30,7 +30,7 @@ screen(4) = screen(4) - 150;
 if plotFigures
     
     
-    figure(2);
+    figure;
     set(gcf,'position',screen)
     setappdata(gcf, 'SubplotDefaultAxesLocation', [.045 .07 .9 .85]);
     

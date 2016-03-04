@@ -10,7 +10,7 @@ b1 = [0     -10000 0     0    ];
 b2 = [0     -1     -1000 -1000];
 d1 = [0     0      0     0    ];
 d2 = [0     0      0     0    ];
-e  = [0     0.0025 0.95  0.95 ];
+e  = [0     0.0025 0.48  0.48 ];
 
 display = 20;
 
@@ -36,28 +36,10 @@ n4 = networkMake(4, 'hopf', a(4), b1(4), b2(4), d1(4), d2(4), e(4),...
                      oscBrainstem(3), 'display', display, 'save', 1,...
                      'znaught', 0);
 
-% %% Make short cochlea network
-% nbm = networkMake(1, 'hopf', a(1), b1(1), b2(1), 0, 0, e(1),'log', osc(1), osc(2), osc(3), 'channel', 1, 'display', display, 'save', 1, 'zna', 0);
-% nbm.w=1;
-% nbm.a=real(nbm.a)./nbm.f+1i*imag(nbm.a);
-% noc = networkMake(2, 'hopf', a(2), b1(2), b2(2), 0, 0, e(2), 'log', osc(1), osc(2), osc(3), 'display', display, 'save', 1, 'zna', 0);
-% 
-% noc.a=real(noc.a)./noc.f+1i*imag(noc.a);
-% noc.b1=noc.b1./noc.f;noc.b2=noc.b2./noc.f;
-% 
-% %% Make CN and IC networks
-% ncn = networkMake(3, 'hopf', a(3), b1(3), b2(3), 0, 0, e(3),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
-% nic = networkMake(4, 'hopf', a(4), b1(4), b2(4), 0, 0, e(4),'log', osc(1), osc(2), osc(3),'display', display, 'save', 1, 'zna', 0);
-
 %% Make a stimulus ============================================================
 % Make a stimulus here, or just add it if already in workspace
 
 n1 = connectAdd(s, n1, 1);
-
-
-% %% Add BM->OC connections
-% bm2oc = connectMake(nbm, noc, 'one', 1);
-% noc   = connectAdd(nbm, noc, bm2oc, 'weight',198000,'type','1freq');
 
 %% Add connections from bm to oc
 n2    = connectAdd(n1, n2, eye(n1.N), 'type', '1freq');
@@ -74,4 +56,4 @@ M = modelMake(@zdot, @cdot, s, n1, n2, n3, n4);
 
 tic;
 M = odeRK4fs(M);
-clc; toc;
+toc;
