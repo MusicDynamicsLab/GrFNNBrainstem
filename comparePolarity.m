@@ -31,7 +31,7 @@ for i=1:2:times*num*2-1
     
     s=stim{i};        % Do one polarity condition
     
-    brainstem;
+    eval(brainstemScript);
     Z1=M.n{2}.Z;clear M.n{1}.Z;            % Not grabbing the BM here, just OC and brainstem layers
     Z2=M.n{3}.Z;clear M.n{2}.Z;
     Z3=M.n{4}.Z;clear M.n{3}.Z;clear M.n{4}.Z;
@@ -45,7 +45,7 @@ for i=1:2:times*num*2-1
     
     s=stim{i+1};         % Do the opposite polarity condition
     
-    brainstem;
+    eval(brainstemScript);
     Z1inv=M.n{2}.Z;clear M.n{1}.Z;
     Z2inv=M.n{3}.Z;clear M.n{2}.Z;
     Z3inv=M.n{4}.Z;clear M.n{3}.Z;clear M.n{4}.Z;
