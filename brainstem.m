@@ -16,7 +16,7 @@ c21 = 197960;
 
 display = 20;
 
-oscCochlea    = [30 10000 397];
+oscCochlea   = [30 10000 397];
 oscBrainstem = [50 750 397];
 
 %% Make a cochlea network =====================================================
