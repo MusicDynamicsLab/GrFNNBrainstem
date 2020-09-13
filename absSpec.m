@@ -1,5 +1,11 @@
-function y=absSpec(x,varargin)
-if isempty(varargin), NFFT=length(x);else NFFT=varargin{1};end
+function [y,f]=absSpec(x,varargin)
+if isempty(varargin), NFFT=length(x);
+elseif length(varargin)==1
+    NFFT=varargin{1};
+elseif length(varargin)==2
+    NFFT=varargin{1};
+    fs=varargin{2};
+end
 if ~isreal(x)
     warning('Input signal is complex; only real portion taken')
     x=real(x);
@@ -14,4 +20,7 @@ if flag
     y=(y(1:ind))';
 else
     y=(y(1:ind,:));
+end
+if length(varargin)==2
+    f=linspace(0,fs/2,length(y));
 end
